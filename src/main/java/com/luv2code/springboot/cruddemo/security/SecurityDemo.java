@@ -28,7 +28,16 @@ public class SecurityDemo {
     //adding jdbc support so that we dont have to hardcode data of users
     @Bean
     public UserDetailsManager userDetails(DataSource dataSource){
-        return new JdbcUserDetailsManager(dataSource);
+        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+
+        jdbcUserDetailsManager.setUsersByUsernameQuery(
+                "select user_id,pw, active from members where user_id=?"
+        );
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
+                "select user_id, role from roles where user_id=?"
+        );
+
+        return jdbcUserDetailsManager;
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
